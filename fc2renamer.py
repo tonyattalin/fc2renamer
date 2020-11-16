@@ -1,4 +1,4 @@
-#!env python3
+#!/usr/bin/python3
 
 import argparse
 import logging
@@ -34,12 +34,6 @@ def code2title(code):
     if title:
         return title[0].text
 
-    # email = chrome.find_element_by_id("email")
-    # password = chrome.find_element_by_id("pass")
-    # email.send_keys('example@gmail.com')
-    # password.send_keys('*****')
-    # password.submit()
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='filename')
     parser.add_argument('-v', dest='verbose', help='verbose', action='store_true')
@@ -50,6 +44,7 @@ if __name__ == '__main__':
 
     if unparsed == []:
         sys.exit()
+
     for filename in unparsed:
         if not os.path.isfile(filename):
             continue
