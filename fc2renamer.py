@@ -27,7 +27,8 @@ def code2title(code):
     options.add_argument("--disable-notifications")
     options.headless = True
 
-    chrome = webdriver.Chrome(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'chromedriver'), options=options)
+    chromedriver = os.path.join(os.path.dirname(os.path.realpath(__file__)), "chromedriver")
+    chrome = webdriver.Chrome(chromedriver, options=options)
     url = "https://adult.contents.fc2.com/article/{}/".format(code)
     chrome.get(url)
     title = chrome.find_elements(By.XPATH, '//div[@class="items_article_headerInfo"]/h3')
