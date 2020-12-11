@@ -14,6 +14,10 @@ logging.basicConfig(stream=sys.stdout)
 logger = logging.getLogger("fc2rename")
 
 
+def remove_punctuation_map(_unistr):
+    remove_punctuation_map = dict((ord(char), None) for char in '\/*?:"<>|')
+    return _unistr.translate(remove_punctuation_map)
+
 def str2code(filename):
     # Parse the filename
     rules = [r"(\d{6,7})"]
@@ -33,7 +37,7 @@ def code2title(code):
     chrome.get(url)
     title = chrome.find_elements(By.XPATH, '//div[@class="items_article_headerInfo"]/h3')
     if title:
-        return title[0].text
+        return remove_punctuation_map(title[0].text)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='filename')
@@ -58,15 +62,20 @@ if __name__ == '__main__':
         logger.debug("title of %s = \"%s\"" % (basename, title))
             
         if title:
+            # remove ! from title
             folder = "FC2-{}-{}".format(code, title[:80])
             folder = os.path.join(dirname, folder)
-            if not os.path.exists(folder):
-                os.makedirs(folder)
+            try:
+                if not os.path.exists(folder):
+                    os.makedirs(folder)
 
-            new_file = os.path.join(folder, basename)
-            # Do not overwrite the old file.
-            if not os.path.exists(new_file):
-                logger.debug("renaming %s to %s" % (filename, new_file))
-                os.rename(filename, new_file)
-            else:
-                logger.error("%s exist" % (new_file))
+                new_file = os.path.join(folder, basename)
+                # Do not overwrite the old file.
+                if not os.path.exists(new_file):
+                    logger.debug("renaming %s to %s" % (filename, new_file))
+                    os.rename(filename, new_file)
+                else:
+                    logger.error("%s exist" % (new_file))
+            except OSError as e:
+                logger.error(e)
+
