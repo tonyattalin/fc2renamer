@@ -18,6 +18,7 @@ def remove_punctuation_map(_unistr):
     remove_punctuation_map = dict((ord(char), None) for char in '\/*?:"<>|')
     return _unistr.translate(remove_punctuation_map)
 
+
 def str2code(filename):
     # Parse the filename
     rules = [r"(\d{6,7})"]
@@ -25,6 +26,7 @@ def str2code(filename):
         m = re.search(rule, filename)
         if m:
             return m.group(1)
+
 
 def code2filename(code):
     options = Options()
@@ -37,7 +39,7 @@ def code2filename(code):
     chrome.get(url)
     seller = chrome.find_elements(By.XPATH, '//div[@class="items_article_headerInfo"]//a[contains(@href, "https://adult.contents.fc2.com/users/")]')
     title = chrome.find_elements(By.XPATH, '//div[@class="items_article_headerInfo"]/h3')
-    
+
     if title and seller:
         seller_str = seller[0].text
         title_str = remove_punctuation_map(title[0].text)[:80]
@@ -54,6 +56,7 @@ if __name__ == '__main__':
     if unparsed == []:
         sys.exit()
 
+    seen = {}
     for filename in unparsed:
         if not os.path.isfile(filename):
             continue
@@ -62,9 +65,13 @@ if __name__ == '__main__':
         dirname = os.path.dirname(filename)
         basename = os.path.basename(filename)
         code = str2code(basename)
-        folder = code2filename(code)
+        if code in seen:
+            folder = seen[code]
+        else:
+            folder = code2filename(code)
+            seen[code] = folder
         logger.debug("title of %s = \"%s\"" % (basename, folder))
-            
+
         if folder:
             # remove ! from title
             # folder = "FC2-{}-{}".format(code, title[:80])
