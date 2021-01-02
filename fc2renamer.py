@@ -26,7 +26,7 @@ def str2code(filename):
         if m:
             return m.group(1)
 
-def code2title(code):
+def code2filename(code):
     options = Options()
     options.add_argument("--disable-notifications")
     options.headless = True
@@ -35,9 +35,13 @@ def code2title(code):
     chrome = webdriver.Chrome(chromedriver, options=options)
     url = "https://adult.contents.fc2.com/article/{}/".format(code)
     chrome.get(url)
+    seller = chrome.find_elements(By.XPATH, '//div[@class="items_article_headerInfo"]//a[contains(@href, "https://adult.contents.fc2.com/users/")]')
     title = chrome.find_elements(By.XPATH, '//div[@class="items_article_headerInfo"]/h3')
-    if title:
-        return remove_punctuation_map(title[0].text)
+    
+    if title and seller:
+        seller_str = seller[0].text
+        title_str = remove_punctuation_map(title[0].text)[:80]
+        return os.path.join(seller_str, "FC2-{}-{}".format(code, title_str))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='filename')
@@ -58,13 +62,13 @@ if __name__ == '__main__':
         dirname = os.path.dirname(filename)
         basename = os.path.basename(filename)
         code = str2code(basename)
-        title = code2title(code)
-        logger.debug("title of %s = \"%s\"" % (basename, title))
+        folder = code2filename(code)
+        logger.debug("title of %s = \"%s\"" % (basename, folder))
             
-        if title:
+        if folder:
             # remove ! from title
-            folder = "FC2-{}-{}".format(code, title[:80])
-            folder = os.path.join(dirname, folder)
+            # folder = "FC2-{}-{}".format(code, title[:80])
+            # folder = os.path.join(dirname, folder)
             try:
                 if not os.path.exists(folder):
                     os.makedirs(folder)
