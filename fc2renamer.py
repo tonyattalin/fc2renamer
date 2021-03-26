@@ -16,6 +16,7 @@ logging.basicConfig(stream=sys.stdout)
 logger = logging.getLogger("fc2rename")
 chrome = None
 
+
 def remove_punctuation_map(_unistr):
     remove_punctuation_map = dict((ord(char), None) for char in '\/*?:"<>|')
     return _unistr.translate(remove_punctuation_map)
@@ -104,4 +105,5 @@ if __name__ == '__main__':
                     logger.error("%s exist" % (new_file))
             except OSError as e:
                 logger.error(e)
-    chrome.quit()
+    if chrome is not None:
+        chrome.quit()
