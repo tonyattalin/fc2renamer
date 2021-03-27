@@ -55,10 +55,11 @@ def code2filename(code, browser=False):
     if "404" in chrome.title:
         return ''
     elif len(actor) == 1:
-        return actor[0].get_attribute('title')
+        title = remove_punctuation_map(chrome.title[:-9][:80])
+        return os.path.join(actor[0].get_attribute('title'), title)
     else:
-        title = chrome.title[:-9][:80]
-        return remove_punctuation_map(title)
+        title = remove_punctuation_map(chrome.title[:-9][:80])
+        return title
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='filename')
