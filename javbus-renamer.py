@@ -32,7 +32,8 @@ def str2code(filename):
         if m:
             return m.group(1)
 
-def code2filename(code, browser=False):
+
+def code2filename(code, browser=False, no_actor=True):
     global chrome
     if not chrome:
         options = Options()
@@ -54,17 +55,19 @@ def code2filename(code, browser=False):
     actor = chrome.find_elements(By.XPATH, '//a[contains(@href, "https://www.javbus.com/star/")]/img')
     if "404" in chrome.title:
         return ''
-    elif len(actor) == 1:
+    elif not no_actor and len(actor) == 1:
         title = remove_punctuation_map(chrome.title[:-9][:80])
         return os.path.join(actor[0].get_attribute('title'), title)
     else:
         title = remove_punctuation_map(chrome.title[:-9][:80])
         return title
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='filename')
     parser.add_argument('-v', dest='verbose', help='verbose', action='store_true')
-    parser.add_argument('-b', dest='browser', action='store_true')
+    parser.add_argument('-b', dest='browser', help='open browser session', action='store_true')
+    parser.add_argument('--no_actor', dest='no_actor', help='do not create folder for actor', action='store_true')
 
     args, unparsed = parser.parse_known_args()
     if args.verbose:
@@ -88,7 +91,7 @@ if __name__ == '__main__':
         if code in seen:
             folder = seen[code]
         else:
-            folder = code2filename(code, args.browser)
+            folder = code2filename(code, args.browser, args.no_actor)
             seen[code] = folder
         logger.debug("title of %s = \"%s\"" % (basename, folder))
 
