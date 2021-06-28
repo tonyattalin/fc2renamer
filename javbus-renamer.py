@@ -18,7 +18,7 @@ chrome = None
 
 
 def remove_punctuation_map(_unistr):
-    remove_punctuation_map = dict((ord(char), None) for char in '\/*?:"<>|')
+    remove_punctuation_map = dict((ord(char), None) for char in '\/*?:"<>|.')
     return _unistr.translate(remove_punctuation_map)
 
 
