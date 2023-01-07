@@ -7,10 +7,14 @@ import re
 import sys
 
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
+
 
 logging.basicConfig(stream=sys.stdout)
 logger = logging.getLogger("fc2rename")
@@ -39,13 +43,17 @@ def code2filename(code, browser=False):
         if not browser:
             options.headless = True
 
-        chromedriver = os.path.join(os.path.dirname(os.path.realpath(__file__)), "chromedriver")
+        # chromedriver = os.path.join(os.path.dirname(os.path.realpath(__file__)), "chromedriver")
+        # chromedriver = "/snap/bin/chromium.chromedriver"
         # options.add_argument("user-data-dir={}".format("chrome-fc2renamer"))
         options.add_argument("--disable-notifications") 
         prefs = {"profile.managed_default_content_settings.images": 2}
         options.add_experimental_option("prefs", prefs)
 
-        chrome = webdriver.Chrome(chromedriver, options=options)
+        # chrome = webdriver.Chrome(chromedriver, options=options)
+        # [ ] DeprecationWarning: executable_path has been deprecated selenium python - Stack Overflow - https://stackoverflow.com/questions/64717302/deprecationwarning-executable-path-has-been-deprecated-selenium-python
+
+        chrome = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         # chrome.set_page_load_timeout(5)
         # chrome.implicitly_wait(10) 
 
