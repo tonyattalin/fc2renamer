@@ -7,13 +7,15 @@ import re
 import sys
 
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from webdriver_manager.chrome import ChromeDriverManager
 
 logging.basicConfig(stream=sys.stdout)
-logger = logging.getLogger("fc2rename")
+logger = logging.getLogger("javrename")
 chrome = None
 
 
@@ -25,7 +27,7 @@ def remove_punctuation_map(_unistr):
 def str2code(filename):
     # Parse the filename
     rules = [
-        r"(\w{3,5}-\d{3,5})",
+        r"\d{0,3}(\w{3,5}-\d{3,5})",
     ]
     for rule in rules:
         m = re.search(rule, filename)
@@ -41,13 +43,15 @@ def code2filename(code, browser=False, no_actor=True):
         if not browser:
             options.headless = True
 
-        chromedriver = os.path.join(os.path.dirname(os.path.realpath(__file__)), "chromedriver")
+        # chromedriver = os.path.join(os.path.dirname(os.path.realpath(__file__)), "chromedriver")
         # options.add_argument("user-data-dir={}".format("chrome-fc2renamer"))
         options.add_argument("--disable-notifications") 
         prefs = {"profile.managed_default_content_settings.images": 2}
         options.add_experimental_option("prefs", prefs)
 
-        chrome = webdriver.Chrome(chromedriver, options=options)
+        ## chrome = webdriver.Chrome(chromedriver, options=options)
+        # DeprecationWarning: executable_path has been deprecated selenium python - Stack Overflow - https://stackoverflow.com/questions/64717302/deprecationwarning-executable-path-has-been-deprecated-selenium-python
+        chrome = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     url = "https://www.javbus.com/{}".format(code)
     chrome.get(url)
